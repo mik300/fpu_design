@@ -9,10 +9,10 @@ module tb_fp_add_sub();
     localparam T = 20; //clock period
 
     logic [31:0] a, b, result, golden_result;
-    logic op, exp_overflow_flag, exp_underflow_flag, nan_flag;
+    logic op, exp_overflow_flag, exp_underflow_flag, nan_flag, zero_flag;
     
     // instantiate uut
-    fp_add_sub uut(.opd1(a), .opd2(b), .op(op), .exp_overflow_flag(exp_overflow_flag), .exp_underflow_flag(exp_underflow_flag),  .nan_flag(nan_flag), .res(result));
+    fp_add_sub uut(.opd1(a), .opd2(b), .op(op), .exp_overflow_flag(exp_overflow_flag), .exp_underflow_flag(exp_underflow_flag),  .nan_flag(nan_flag), .zero_flag(zero_flag), .res(result));
     
     // generate test vectors
     initial begin
@@ -42,14 +42,14 @@ module tb_fp_add_sub();
         // Close the file after reading
         $fclose(file);
         end else begin
-        $display("Failed to open file.");
+            $display("Failed to open file.");
         end
     end
 
     always @(golden_result) begin
         if (^result !== 1'bx) begin
             assert (golden_result === result)
-            else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);
+            else $error("Results don't match. result = %b, expected result = %b", result, golden_result);
         end
     end
 

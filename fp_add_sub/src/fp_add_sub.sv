@@ -4,13 +4,14 @@ module fp_add_sub(
     output logic exp_overflow_flag,
     output logic exp_underflow_flag,
     output logic nan_flag,
+    output logic zero_flag,
     output logic [31:0] res
 );
 
 
 logic sign_opd1, sign_opd2, sign_exp_diff, sticky_bit, EOP, add_ovf, ovf_rnd, left_right, all_zeros, sign_res;
 
-logic exp_ovf_flag, exp_undf_flag, nan;
+logic exp_ovf_flag, exp_undf_flag, nan, zero;
 
 logic [7:0] exp_opd1, exp_opd2, greater_exp;
 logic [8:0] exp_diff, exp_res, adjusted_exp1, adjusted_exp2; // 9 bits instead of 8 for overflow detection
@@ -20,7 +21,7 @@ logic [23:0] sig_greater, sig_lower, sig_lower_shifted, sig_res, sig_res_shifted
 logic [24:0] sig_res_rounded, sig_res_normalized;
 logic [4:0] shift_amount, nb_leading_zeros;
 
-logic [7:0] right_shifter_output, left_r1_shifter_output; // Signals holding the lower 8 bits of the shifters
+logic [7:0] shifted_output_low, left_r1_shifted_output_low; // Signals holding the lower 8 bits of the shifters
 
 // unpack
 assign sign_opd1 = opd1[31];
@@ -41,13 +42,13 @@ assign EOP = ~op & ~sign_opd1 & sign_opd2  |  ~op & sign_opd1 & ~sign_opd2  |  o
 
 mux_2x1 #(.N(8)) mux(.x0(exp_opd1), .x1(exp_opd2), .s(sign_exp_diff), .f(greater_exp));
 
-barrel_shifter right_shifter(.a({sig_lower, 8'b0}), .shift_amount(exp_diff[4:0]), .left(1'b0), .res({sig_lower_shifted, right_shifter_output}));
+barrel_shifter right_shifter(.a({sig_lower, 8'b0}), .shift_amount(exp_diff[4:0]), .left(1'b0), .res({sig_lower_shifted, shifted_output_low}));
 
 adder_sub #(.N(24)) adder_sub(.a(sig_greater), .b(sig_lower_shifted), .cin(EOP), .sum(sig_res), .cout(add_ovf));
 
 LZC_32_bit LZC(.a({sig_res, 8'b0}), .Z(nb_leading_zeros), .V(all_zeros));
 
-barrel_shifter left_r1_shifter(.a({sig_res, 8'b0}), .shift_amount(shift_amount), .left(left_right), .res({sig_res_shifted, left_r1_shifter_output}));
+barrel_shifter left_r1_shifter(.a({sig_res, shifted_output_low}), .shift_amount(shift_amount), .left(left_right), .res({sig_res_shifted, left_r1_shifted_output_low}));
 
 always_comb begin: swap
     if (sign_exp_diff == 1'b0) begin
@@ -90,22 +91,12 @@ end
 assign ovf_rnd = sig_res_rounded[24];
 
 always_comb begin: rounding_logic
-    if (op == 1'b0) begin // If op is add
-        sticky_bit = |left_r1_shifter_output[6:0];
-        if (sticky_bit == 1'b1) begin // round to nearest even number
-            sig_res_rounded = {1'b0, sig_res_shifted} + {24'b0, left_r1_shifter_output[7]};
-        end else begin
-            sig_res_rounded = {1'b0, sig_res_shifted};
-        end
+    sticky_bit = |left_r1_shifted_output_low[6:0];
+    if (sticky_bit == 1'b1) begin // round to nearest even number
+        sig_res_rounded = {1'b0, sig_res_shifted} + {24'b0, left_r1_shifted_output_low[7]};
     end else begin
-        sticky_bit = |left_r1_shifter_output[6:0];
-        if (sticky_bit == 1'b1) begin // round to nearest even number
-            sig_res_rounded = {1'b0, sig_res_shifted} + {23'b0, left_r1_shifter_output[7]};
-        end else begin
-            sig_res_rounded = {1'b0, sig_res_shifted};
-        end
+        sig_res_rounded = {1'b0, sig_res_shifted};
     end
-
 
     if (ovf_rnd == 1'b1) begin
         sig_res_normalized = (sig_res_rounded >> 1);
@@ -120,7 +111,9 @@ end
 
 assign nan = ((exp_opd1 == 8'b11111111 && mant_opd1 != 23'b0) || (exp_opd2 == 8'b11111111 && mant_opd2 != 23'b0)) ? 1'b1 : 1'b0;
 
-assign exp_ovf_flag = (greater_exp >= 9'b011111111 || adjusted_exp1 >= 9'b011111111 || adjusted_exp2 >= 9'b011111111) ? 1'b1 : 1'b0;
+assign exp_ovf_flag = (greater_exp == 8'b11111111 || adjusted_exp1 >= 9'b011111111 || adjusted_exp2 >= 9'b011111111) ? 1'b1 : 1'b0;
+
+assign zero = (sig_res == 24'b0) ? 1'b1 : 1'b0;
 
 
 always_comb begin: exceptions
@@ -132,20 +125,31 @@ always_comb begin: exceptions
         exp_overflow_flag = 1'b0;
         exp_underflow_flag = 1'b0;
         nan_flag = 1'b1;
+        zero_flag = 1'b0;
     end else if (exp_ovf_flag == 1'b1) begin
-        res[31] = 1'b0;
+        res[31] = sign_res;
         res[30:23] = 8'b11111111;
         res[22:0] = 23'b0;
         exp_overflow_flag = 1'b1;
         exp_underflow_flag = 1'b0;
         nan_flag = 1'b0;
+        zero_flag = 1'b0;
     end else if (exp_undf_flag == 1'b1) begin
         res[31] = sign_res;
         res[30:23] = 8'b00000000;
-        res[22:0] = mant_final;
+        res[22:0] = sig_res[22:0];
         exp_overflow_flag = 1'b0;
         exp_underflow_flag = 1'b1;
         nan_flag = 1'b0;
+        zero_flag = 1'b0;
+    end else if (zero == 1'b1) begin
+        res[31] = 1'b0;
+        res[30:23] = 8'b00000000;
+        res[22:0] = 23'b0;
+        exp_overflow_flag = 1'b0;
+        exp_underflow_flag = 1'b0;
+        nan_flag = 1'b0;
+        zero_flag = 1'b1;
     end else begin // no exceptions case
         res[31] = sign_res;
         res[30:23] = adjusted_exp2[7:0];
@@ -153,6 +157,7 @@ always_comb begin: exceptions
         exp_overflow_flag = 1'b0;
         exp_underflow_flag = 1'b0;
         nan_flag = 1'b0;
+        zero_flag = 1'b0;
     end
 end
 
