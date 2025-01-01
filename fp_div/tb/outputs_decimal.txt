@@ -3,3 +3,11 @@
 8.346062448
 -14.22868613
 1.489061935
+0.0
+-infinity
+infinity
+0.0
+NAN
+NAN
+infinity
+0.0

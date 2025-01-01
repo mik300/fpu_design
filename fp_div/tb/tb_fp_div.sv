@@ -9,13 +9,15 @@ module tb_fp_div();
     localparam T = 20; //clock period
 
     logic [31:0] a, b, result, golden_result;
-    logic ovf;
+    logic exp_overflow, nan, zero;
+    logic clk;
     
     // instantiate uut
-    fp_div uut(.opd1(a), .opd2(b), .overflow(ovf), .res(result));
+    fp_div uut(.opd1(a), .opd2(b), .exp_overflow(exp_overflow), .nan(nan), .zero(zero), .res(result));
     
     // generate test vectors
     initial begin
+        clk = 1'b0;
         #T;
         // Open the file for reading
         file = $fopen("./tb/inputs.txt", "r");
@@ -35,8 +37,9 @@ module tb_fp_div();
             // Read a 32-bit inputs from file and assign them to a and b
             tmp = $fscanf(file, "%b\n", a);  
             tmp = $fscanf(file, "%b\n", b);
-            #(T/50); // Add small delay between reading input and checking for correct output, otherwise assert would fail
+            #(T/50);
             tmp = $fscanf(output_file, "%b\n", golden_result);
+            clk = ~clk;
         end
         // Close the file after reading
         $fclose(file);
@@ -45,9 +48,10 @@ module tb_fp_div();
         end
     end
 
-    always @(golden_result) begin
+    always @(edge clk) begin
         if (^result !== 1'bx) begin
-            assert ((golden_result & 1'b0 ^ result & 1'b0) === 0) // A difference in the LSB is tolerated, as a small loss in FP operations is expected. It may arise from different rounding methods.
+            //assert ((golden_result & 1'b0 ^ result & 1'b0) === 0) // A difference in the LSB is tolerated, as a small loss in FP operations is expected. It may arise from different rounding methods.
+            assert (golden_result === result)
             else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);
         end
     end

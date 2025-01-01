@@ -10,12 +10,13 @@ module tb_fp_add_sub();
 
     logic [31:0] a, b, result, golden_result;
     logic op, exp_overflow_flag, exp_underflow_flag, nan_flag, zero_flag;
-    
+    logic clk; // Used to drive the monitor
     // instantiate uut
     fp_add_sub uut(.opd1(a), .opd2(b), .op(op), .exp_overflow_flag(exp_overflow_flag), .exp_underflow_flag(exp_underflow_flag),  .nan_flag(nan_flag), .zero_flag(zero_flag), .res(result));
     
     // generate test vectors
     initial begin
+        clk = 1'b0;
         #T;
         // Open the file for reading
         file = $fopen("./tb/fp_add_sub/inputs.txt", "r");
@@ -36,8 +37,9 @@ module tb_fp_add_sub();
             tmp = $fscanf(file, "%b\n", a);  
             tmp = $fscanf(file, "%b\n", b);
             tmp = $fscanf(file, "%b\n", op);
-            #(T/50); // Add small delay between reading input and checking for correct output, otherwise assert would fail
+            #(T/50); 
             tmp = $fscanf(output_file, "%b\n", golden_result);
+            clk = ~clk;
         end
         // Close the file after reading
         $fclose(file);
@@ -46,7 +48,7 @@ module tb_fp_add_sub();
         end
     end
 
-    always @(golden_result) begin
+    always @(edge clk) begin
         if (^result !== 1'bx) begin
             assert (golden_result === result)
             else $error("Results don't match. result = %b, expected result = %b", result, golden_result);

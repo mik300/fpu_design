@@ -2,3 +2,14 @@
 -44.44267931
 518.406849
 -23.93822209
+11543.6845703125
+NAN
+-infinity
+NAN
+infinity
+-infinity
+infinity
+-infinity
+infinity
+NAN
+0.0

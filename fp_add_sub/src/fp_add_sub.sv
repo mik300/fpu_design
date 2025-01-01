@@ -11,7 +11,7 @@ module fp_add_sub(
 
 logic sign_opd1, sign_opd2, sign_exp_diff, sticky_bit, EOP, add_ovf, ovf_rnd, left_right, all_zeros, sign_res;
 
-logic exp_ovf_flag, exp_undf_flag, nan, zero;
+logic exp_ovf, exp_undf, nan, zero, inf_plus_neg_inf;
 
 logic [7:0] exp_opd1, exp_opd2, greater_exp;
 logic [8:0] exp_diff, exp_res, adjusted_exp1, adjusted_exp2; // 9 bits instead of 8 for overflow detection
@@ -67,10 +67,10 @@ always_comb begin: exponent_update
         adjusted_exp1 = greater_exp + {8'b0, 1'b1};
     end else begin
         if (greater_exp > {4'b0, nb_leading_zeros}) begin // check for exponent underflow
-            exp_undf_flag = 1'b0;
+            exp_undf = 1'b0;
             adjusted_exp1 = greater_exp - {3'b0, nb_leading_zeros};
         end else begin
-            exp_undf_flag = 1'b1;
+            exp_undf = 1'b1;
             adjusted_exp1 = 9'b000000000;
         end
     end
@@ -108,15 +108,19 @@ always_comb begin: rounding_logic
 
 end
 
+assign opd1_infinity = (exp_opd1 == 8'b11111111 && mant_opd1 == 23'b0) ? 1'b1 : 1'b0;
+assign opd2_infinity = (exp_opd2 == 8'b11111111 && mant_opd2 == 23'b0) ? 1'b1 : 1'b0;
 
-assign nan = ((exp_opd1 == 8'b11111111 && mant_opd1 != 23'b0) || (exp_opd2 == 8'b11111111 && mant_opd2 != 23'b0)) ? 1'b1 : 1'b0;
+assign inf_plus_neg_inf = ((EOP == 1'b1) && (opd1_infinity == 1'b1) && (opd2_infinity == 1'b1)) ? 1'b1 : 1'b0;
 
-assign exp_ovf_flag = (greater_exp == 8'b11111111 || adjusted_exp1 >= 9'b011111111 || adjusted_exp2 >= 9'b011111111) ? 1'b1 : 1'b0;
+assign nan = ((exp_opd1 == 8'b11111111 && mant_opd1 != 23'b0) || (exp_opd2 == 8'b11111111 && mant_opd2 != 23'b0) || (inf_plus_neg_inf == 1'b1)) ? 1'b1 : 1'b0;
+
+assign exp_ovf = (greater_exp == 8'b11111111 || adjusted_exp1 >= 9'b011111111 || adjusted_exp2 >= 9'b011111111) ? 1'b1 : 1'b0;
 
 assign zero = (sig_res == 24'b0) ? 1'b1 : 1'b0;
 
 
-always_comb begin: exceptions
+always_comb begin: pack_and_handle_exceptions
 
     if (nan == 1'b1) begin 
         res[31] = 1'b0;
@@ -126,7 +130,7 @@ always_comb begin: exceptions
         exp_underflow_flag = 1'b0;
         nan_flag = 1'b1;
         zero_flag = 1'b0;
-    end else if (exp_ovf_flag == 1'b1) begin
+    end else if (exp_ovf == 1'b1) begin
         res[31] = sign_res;
         res[30:23] = 8'b11111111;
         res[22:0] = 23'b0;
@@ -134,7 +138,7 @@ always_comb begin: exceptions
         exp_underflow_flag = 1'b0;
         nan_flag = 1'b0;
         zero_flag = 1'b0;
-    end else if (exp_undf_flag == 1'b1) begin
+    end else if (exp_undf == 1'b1) begin
         res[31] = sign_res;
         res[30:23] = 8'b00000000;
         res[22:0] = sig_res[22:0];

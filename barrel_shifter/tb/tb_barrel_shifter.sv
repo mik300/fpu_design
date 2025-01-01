@@ -11,12 +11,14 @@ module tb_barrel_shifter();
     logic [31:0] a, result, golden_result;
     logic [4:0] b;
     logic left;
+    logic clk;
     
     // instantiate uut
     barrel_shifter uut(.a(a), .shift_amount(b), .left(left), .res(result));
     
     // generate test vectors
     initial begin
+        clk = 1'b0;
         #T;
         // Open the file for reading
         file = $fopen("./tb/inputs.txt", "r");
@@ -39,6 +41,7 @@ module tb_barrel_shifter();
             tmp = $fscanf(file, "%b\n", left);
             #(T/50); // Add small delay between reading input and checking for correct output, otherwise assert would fail
             tmp = $fscanf(output_file, "%b\n", golden_result);
+            clk = ~clk;
         end
         // Close the file after reading
         $fclose(file);
@@ -47,7 +50,7 @@ module tb_barrel_shifter();
         end
     end
 
-    always @(golden_result) begin
+    always @(edge clk) begin
         if (^result !== 1'bx) begin
             assert (golden_result === result) // A difference in the LSB is tolerated, as a small loss in FP operations is expected. It may arise from different rounding methods.
             else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);

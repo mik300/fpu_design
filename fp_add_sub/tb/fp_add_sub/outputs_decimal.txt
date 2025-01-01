@@ -12,3 +12,11 @@ nan
 -infinity
 underflow
 zero
+nan
+nan
+nan
+nan
+infinity
+-infinity
+infinity
+-infinity

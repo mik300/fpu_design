@@ -40,3 +40,15 @@ sub
 10.44200038909912109375
 10.44200038909912109375
 sub
+-infinity
+infinity
+add
+infinity
+-infinity
+add
+infinity
+infinity
+sub
+-infinity
+-infinity
+sub

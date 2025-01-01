@@ -1,5 +1,6 @@
 work/
 *.drawio
 *.bkp
+*.dtmp
 *.wlf
 tmp.txt

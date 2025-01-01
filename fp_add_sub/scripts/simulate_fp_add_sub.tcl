@@ -39,4 +39,4 @@ sim:/tb_fp_add_sub/uut/add_ovf \
 sim:/tb_fp_add_sub/uut/greater_exp \
 sim:/tb_fp_add_sub/uut/adjusted_exp1 \
 sim:/tb_fp_add_sub/uut/adjusted_exp2
-run 200 ns
+run 300 ns

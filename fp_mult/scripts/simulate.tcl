@@ -6,4 +6,4 @@ vlog -work ./work tb/tb_fp_mult.sv
 
 vsim work.tb_fp_mult -voptargs=+acc
 add wave *
-run 100 ns
+run 200 ns
