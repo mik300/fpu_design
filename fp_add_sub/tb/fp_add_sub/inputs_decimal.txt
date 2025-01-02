@@ -30,10 +30,10 @@ sub
 sub
 NAN
 -56.138599395751953125
-sub
+add
 −205.6282958984375
 -infinity
-sub
+add
 3.14227519197955709794043875102e−35
 1.57773008592225339972751323047e−30
 sub
@@ -51,4 +51,7 @@ infinity
 sub
 -infinity
 -infinity
+sub
+0.0
+0.0
 sub

@@ -13,7 +13,6 @@ vlog -work ./work src/or_nand.sv
 vlog -work ./work src/LZC_8_bit.sv
 vlog -work ./work src/LZC_8_bit.sv
 vlog -work ./work src/LZC_32_bit.sv
-vlog -work ./work tb/LZC/tb_LZC_32_bit.sv
 
 vlog -work ./work src/fp_add_sub.sv
 vlog -work ./work tb/fp_add_sub/tb_fp_add_sub.sv

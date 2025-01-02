@@ -81,6 +81,7 @@ always_comb begin: pack_and_handle_exceptions
         res[22:0] = 23'b1;
         exp_overflow = 1'b0;
         nan = 1'b1;
+        zero = 1'b0;
     end else if (zero_flag == 1'b1) begin
         res[31] = 1'b0;
         res[30:23] = 8'b00000000;
@@ -94,12 +95,14 @@ always_comb begin: pack_and_handle_exceptions
         res[22:0] = 23'b0;
         exp_overflow = 1'b1;
         nan = 1'b0;
+        zero = 1'b0;
     end else begin // no exceptions case
         res[31] = sign_res;
         res[30:23] = adjusted_exp2[7:0];
         res[22:0] = mant_final;
         exp_overflow = 1'b0;
         nan = 1'b0;
+        zero = 1'b0;
     end
 end
 

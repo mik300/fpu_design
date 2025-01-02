@@ -20,3 +20,4 @@ infinity
 -infinity
 infinity
 -infinity
+zero

@@ -12,7 +12,7 @@ module tb_fp_add_sub();
     logic op, exp_overflow_flag, exp_underflow_flag, nan_flag, zero_flag;
     logic clk; // Used to drive the monitor
     // instantiate uut
-    fp_add_sub uut(.opd1(a), .opd2(b), .op(op), .exp_overflow_flag(exp_overflow_flag), .exp_underflow_flag(exp_underflow_flag),  .nan_flag(nan_flag), .zero_flag(zero_flag), .res(result));
+    fp_add_sub uut(.opd1(a), .opd2(b), .op(op), .exp_overflow(exp_overflow_flag), .exp_underflow(exp_underflow_flag),  .nan(nan_flag), .zero(zero_flag), .res(result));
     
     // generate test vectors
     initial begin
