@@ -14,8 +14,8 @@ logic [31:0] res_add_sub, res_mul, res_div;
 logic [31:0] mux_to_mux_res;
 logic mux_to_mux_ovf, mux_to_mux_nan, mux_to_mux_zero;
 logic exp_overflow_add_sub, exp_underflow_add_sub, nan_add_sub, zero_add_sub;
-logic exp_overflow_mul, exp_underflow_mul, nan_mul, zero_mul;
-logic exp_overflow_div, exp_underflow_div, nan_div, zero_div;
+logic exp_overflow_mul, nan_mul, zero_mul;
+logic exp_overflow_div, nan_div, zero_div;
 
 logic [31:0] low_signal;
 

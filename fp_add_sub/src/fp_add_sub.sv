@@ -65,6 +65,7 @@ end
 always_comb begin: exponent_update
     if (add_ovf == 1'b1 && EOP == 1'b0) begin
         adjusted_exp1 = greater_exp + {8'b0, 1'b1};
+        exp_undf_flag = 1'b0;
     end else begin
         if (greater_exp > {4'b0, nb_leading_zeros}) begin // check for exponent underflow
             exp_undf_flag = 1'b0;
@@ -73,7 +74,7 @@ always_comb begin: exponent_update
             exp_undf_flag = 1'b1;
             adjusted_exp1 = 9'b000000000;
         end
-    end
+    end 
 end
 
 assign adjusted_exp2 = (ovf_rnd == 1'b1) ? adjusted_exp1 + {8'b0, 1'b1} : adjusted_exp1;
