@@ -19,23 +19,4 @@ vlog -work ./work tb/fp_add_sub/tb_fp_add_sub.sv
 
 vsim work.tb_fp_add_sub -voptargs=+acc
 add wave *
-add wave -position insertpoint  \
-sim:/tb_fp_add_sub/uut/sig_greater \
-sim:/tb_fp_add_sub/uut/sig_lower \
-sim:/tb_fp_add_sub/uut/sig_lower_shifted \
-sim:/tb_fp_add_sub/uut/shifted_output_low \
-sim:/tb_fp_add_sub/uut/sig_res \
-sim:/tb_fp_add_sub/uut/left_right  \
-sim:/tb_fp_add_sub/uut/nb_leading_zeros  \
-sim:/tb_fp_add_sub/uut/sig_res_shifted \
-sim:/tb_fp_add_sub/uut/left_r1_shifted_output_low \
-sim:/tb_fp_add_sub/uut/sig_res_rounded \
-sim:/tb_fp_add_sub/uut/sig_res_normalized \
-sim:/tb_fp_add_sub/uut/EOP  \
-sim:/tb_fp_add_sub/uut/sign_opd1  \
-sim:/tb_fp_add_sub/uut/sign_opd2 \
-sim:/tb_fp_add_sub/uut/add_ovf \
-sim:/tb_fp_add_sub/uut/greater_exp \
-sim:/tb_fp_add_sub/uut/adjusted_exp1 \
-sim:/tb_fp_add_sub/uut/adjusted_exp2
 run 300 ns

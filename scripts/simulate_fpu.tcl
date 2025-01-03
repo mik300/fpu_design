@@ -29,18 +29,4 @@ vlog -work ./work tb/tb_fpu.sv
 
 vsim work.tb_fpu -voptargs=+acc
 add wave *
-add wave -position insertpoint  \
-sim:/tb_fpu/uut/res_add_sub \
-sim:/tb_fpu/uut/exp_overflow_add_sub \
-sim:/tb_fpu/uut/exp_underflow_add_sub \
-sim:/tb_fpu/uut/nan_add_sub \
-sim:/tb_fpu/uut/zero_add_sub \
-sim:/tb_fpu/uut/fp_add_sub/opd1 \
-sim:/tb_fpu/uut/fp_add_sub/opd2 \
-sim:/tb_fpu/uut/fp_add_sub/op \
-sim:/tb_fpu/uut/fp_add_sub/exp_overflow \
-sim:/tb_fpu/uut/fp_add_sub/exp_underflow \
-sim:/tb_fpu/uut/fp_add_sub/nan \
-sim:/tb_fpu/uut/fp_add_sub/zero \
-sim:/tb_fpu/uut/fp_add_sub/res
 run 1000 ns
