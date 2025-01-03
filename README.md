@@ -1,6 +1,6 @@
 # Floating-Point Unit (FPU)
 
-This repository contains the SystemVerilog implementation of a 32-bit Floating-Point Unit (FPU). The project includes testbenches and schematics for all components that make up the FPU.
+This repository contains a synthesizable SystemVerilog implementation of a 32-bit Floating-Point Unit (FPU). The project includes testbenches and schematics for all components that make up the FPU.
 
 ## Features
 
