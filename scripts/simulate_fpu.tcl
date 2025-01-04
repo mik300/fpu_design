@@ -7,6 +7,11 @@ vlog -work ./work fp_add_sub/src/adder_sub.sv
 vlog -work ./work barrel_shifter/src/mux_2x1.sv
 vlog -work ./work barrel_shifter/src/barrel_shifter.sv
 
+# Compile carry skip adder with its submodules
+vlog -work ./work fp_add_sub/src/fa_p.sv
+vlog -work ./work fp_add_sub/src/ripple_carry_block.sv
+vlog -work ./work fp_add_sub/src/carry_skip_adder.sv
+
 # Compile the Leading Zero Counter (LZC) with its submodules
 vlog -work ./work fp_add_sub/src/and_nor.sv
 vlog -work ./work fp_add_sub/src/or_nand.sv

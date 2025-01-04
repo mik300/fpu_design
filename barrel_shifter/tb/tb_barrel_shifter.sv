@@ -29,10 +29,6 @@ module tb_barrel_shifter();
         if (output_file)  $display("File was opened successfully");
         else     $display("File was NOT opened successfully : %0d", output_file);
     
-        // Check if the file is successfully opened
-        if (file) begin
-        // Read each line (32-bit number) from the file and assign it to data_signal
-
         while (!$feof(file)) begin
             #(T/2);
             // Read a 32-bit inputs from file and assign them to a and b
@@ -45,9 +41,8 @@ module tb_barrel_shifter();
         end
         // Close the file after reading
         $fclose(file);
-        end else begin
-        $display("Failed to open file.");
-        end
+        $fclose(output_file);
+
     end
 
     always @(edge clk) begin

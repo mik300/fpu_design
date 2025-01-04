@@ -44,7 +44,8 @@ mux_2x1 #(.N(8)) mux(.x0(exp_opd1), .x1(exp_opd2), .s(sign_exp_diff), .f(greater
 
 barrel_shifter right_shifter(.a({sig_lower, 8'b0}), .shift_amount(exp_diff[4:0]), .left(1'b0), .res({sig_lower_shifted, shifted_output_low}));
 
-adder_sub #(.N(24)) adder_sub(.a(sig_greater), .b(sig_lower_shifted), .cin(EOP), .sum(sig_res), .cout(add_ovf));
+//adder_sub #(.N(24)) adder_sub2(.a(sig_greater), .b(sig_lower_shifted), .cin(EOP), .sum(sig_res_tmp), .cout(add_ovf_tmp));
+carry_skip_adder #(.N(24)) adder_sub(.a(sig_greater), .b(sig_lower_shifted), .cin(EOP), .sum(sig_res), .cout(add_ovf));
 
 LZC_32_bit LZC(.a({sig_res, 8'b0}), .Z(nb_leading_zeros), .V(all_zeros));
 

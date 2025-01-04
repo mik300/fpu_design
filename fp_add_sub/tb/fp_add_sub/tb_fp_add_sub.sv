@@ -19,18 +19,14 @@ module tb_fp_add_sub();
         clk = 1'b0;
         #T;
         // Open the file for reading
-        file = $fopen("./tb/fp_add_sub/inputs.txt", "r");
+        file = $fopen("./fp_add_sub/tb/fp_add_sub/inputs.txt", "r");
         if (file)  $display("File was opened successfully");
         else     $error("File was NOT opened successfully : %0d", file);
 
-        output_file = $fopen("./tb/fp_add_sub/outputs.txt", "r");
+        output_file = $fopen("./fp_add_sub/tb/fp_add_sub/outputs.txt", "r");
         if (output_file)  $display("File was opened successfully");
         else     $error("File was NOT opened successfully : %0d", output_file);
     
-        // Check if the file is successfully opened
-        if (file) begin
-        // Read each line (32-bit number) from the file and assign it to data_signal
-
         while (!$feof(file)) begin
             #(T/2);
             // Read a 32-bit inputs from file and assign them to a and b
@@ -43,9 +39,8 @@ module tb_fp_add_sub();
         end
         // Close the file after reading
         $fclose(file);
-        end else begin
-            $display("Failed to open file.");
-        end
+        $fclose(output_file);
+
     end
 
     always @(edge clk) begin

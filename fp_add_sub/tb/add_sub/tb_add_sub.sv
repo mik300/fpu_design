@@ -26,10 +26,6 @@ module tb_add_sub();
         if (output_file)  $display("File was opened successfully");
         else     $display("File was NOT opened successfully : %0d", output_file);
     
-        // Check if the file is successfully opened
-        if (file) begin
-        // Read each line (32-bit number) from the file and assign it to data_signal
-
         while (!$feof(file)) begin
             #(T/2);
             // Read a 32-bit inputs from file and assign them to a and b
@@ -41,15 +37,14 @@ module tb_add_sub();
         end
         // Close the file after reading
         $fclose(file);
-        end else begin
-        $display("Failed to open file.");
-        end
+        $fclose(output_file);
+
     end
 
     always @(golden_result) begin
         if (^result !== 1'bx) begin
             assert (golden_result === result)
-            else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);
+            else $error("Results don't match. result = %b, expected result = %b", result, golden_result);
         end
     end
 

@@ -1,6 +1,9 @@
 file delete -force work
 vlib work
 
-cd ./fp_div/
+vlog -work ./work ./fp_div/src/fp_div.sv
+vlog -work ./work ./fp_div/tb/tb_fp_div.sv
 
-do ./scripts/simulate.tcl
+vsim work.tb_fp_div -voptargs=+acc
+add wave *
+run 250 ns
