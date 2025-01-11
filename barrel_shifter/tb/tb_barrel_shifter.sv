@@ -48,7 +48,7 @@ module tb_barrel_shifter();
     always @(edge clk) begin
         if (^result !== 1'bx) begin
             assert (golden_result === result) // A difference in the LSB is tolerated, as a small loss in FP operations is expected. It may arise from different rounding methods.
-            else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);
+            else $error("Results don't match. result = %b, expected result = %b", result, golden_result);
         end
     end
 

@@ -48,7 +48,7 @@ module tb_fp_div();
         if (^result !== 1'bx) begin
             //assert ((golden_result & 1'b0 ^ result & 1'b0) === 0) // A difference in the LSB is tolerated, as a small loss in FP operations is expected. It may arise from different rounding methods.
             assert (golden_result === result)
-            else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);
+            else $error("Results don't match. result = %b, expected result = %b", result, golden_result);
         end
     end
 

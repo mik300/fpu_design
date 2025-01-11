@@ -45,7 +45,7 @@ module tb_fp_mult();
     always @(edge clk) begin
         if (^result !== 1'bx) begin
             assert (golden_result === result)
-            else $error("Results don't match. result = %0b, expected result = %0b", result, golden_result);
+            else $error("Results don't match. result = %b, expected result = %b", result, golden_result);
         end
     end
 
